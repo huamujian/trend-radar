@@ -52,10 +52,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ─── 联网触发：URL 参数自动运行 ──────────────────────────
+# 用法：?topic=AI陪伴&api_key=YOUR_KEY
+query_params = st.query_params
+url_topic = query_params.get("topic", "")
+url_api_key = query_params.get("api_key", "")
+
 # ─── 侧边栏：密码 + API Key ──────────────────────────────
 st.sidebar.markdown("## 🔐 访问设置")
 APP_PASSWORD = st.sidebar.text_input("访问密码", type="password", value="")
-GOOGLE_API_KEY = st.sidebar.text_input("Google Gemini API Key", type="password")
+GOOGLE_API_KEY = st.sidebar.text_input("Google Gemini API Key", type="password", value=url_api_key)
 st.sidebar.markdown("---")
 st.sidebar.markdown("""
 **📌 使用说明**
@@ -75,7 +81,7 @@ st.sidebar.caption("📡 趋势雷达 · 免费部署版")
 # ─── 密码校验 ─────────────────────────────────────────────
 CORRECT_PASSWORD = APP_PASSWORD.strip()
 
-if CORRECT_PASSWORD != "trend2025":
+if CORRECT_PASSWORD != "051021":
     st.markdown("# 📡 趋势雷达")
     st.markdown("### AI 创业趋势分析智能体")
     st.markdown("")
@@ -98,12 +104,17 @@ st.markdown("---")
 topic = st.text_input(
     "🎯 输入你想分析的领域或主题",
     placeholder="例如：AI教育、低空经济、具身智能……",
+    value=url_topic,
     help="输入越具体，分析越精准"
 )
 
 col_btn, col_status = st.columns([1, 3])
 with col_btn:
     run_analysis = st.button("🚀 开始分析", use_container_width=True)
+
+# ─── 联网触发：URL 带 topic 参数则自动运行 ───────────────
+if url_topic and GOOGLE_API_KEY and not run_analysis:
+    run_analysis = True
 
 if run_analysis:
     if not GOOGLE_API_KEY:
